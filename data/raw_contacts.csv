@@ -1,0 +1,11 @@
+raw_id,siren,email,societe,source
+1,552 081 317,Contact@ACME-Conseil.fr,ACME Conseil,scraping
+2,552081317,contact@acme-conseil.fr,Acme Conseil SARL,pappers
+3,443 061 841,j.martin@formapro.fr,FormaPro,scraping
+4,443 061 841,info@formapro.fr,FORMAPRO,scraping
+5,—,claire.dubois@@vinexpert.fr,Vinexpert,scraping
+6,812 998 002,nope,BTP Solutions,scraping
+7,812 998 002,p.durand@btp-solutions.fr,BTP Solutions,pappers
+8,327 911 044,test@mailinator.com,QuickWin,scraping
+9,327 911 044,DIRECTION@quickwin.fr,Quick Win,sirene
+10,552 081 317,contact@acme-conseil.fr,ACME Conseil,sirene
