@@ -226,3 +226,5 @@ __pycache__/
 
 # Database
 *.db.git_backup/
+.git_backup/
+pipeline.db
