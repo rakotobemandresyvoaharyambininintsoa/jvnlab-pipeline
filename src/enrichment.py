@@ -35,42 +35,47 @@ def mock_api(siren, page=1):
     }
 
 
+def _compute_wait(status, res, retries):
+    if status == 429:
+        return res.get("retry_after", 1)
+    return (2 ** retries) + random.random()
+
+
+def _fetch_page_with_retry(siren, page, max_retries):
+    """Recupere une page avec retry. Retourne (data, next_page) ou (None, None) si echec definitif."""
+    retries = 0
+
+    while retries < max_retries:
+
+        throttle()
+        res = mock_api(siren, page)
+        status = res["status"]
+
+        if status == 200:
+            return res.get("data", []), res.get("next")
+
+        if status in FATAL_ERRORS:
+            return None, None
+
+        if status in TRANSIENT_ERRORS:
+            time.sleep(_compute_wait(status, res, retries))
+            retries += 1
+
+    return None, None
+
+
 def fetch_with_retry(siren, max_retries=5):
 
     page = 1
     results = []
 
     while page:
+        data, next_page = _fetch_page_with_retry(siren, page, max_retries)
 
-        retries = 0
-
-        while retries < max_retries:
-
-            throttle()
-            res = mock_api(siren, page)
-            status = res["status"]
-
-            if status == 200:
-                results.extend(res.get("data", []))
-                page = res.get("next")
-                break
-
-            # fatal error
-            if status in FATAL_ERRORS:
-                return None
-
-            # retryable
-            if status in TRANSIENT_ERRORS:
-                if status == 429:
-                    time.sleep(res.get("retry_after", 1))
-
-                else:
-                    time.sleep((2 ** retries) + random.random())
-
-                retries += 1
-                continue
-
-        else:
+        if data is None:
             return None
+
+        results.extend(data)
+        page = next_page
 
     return results

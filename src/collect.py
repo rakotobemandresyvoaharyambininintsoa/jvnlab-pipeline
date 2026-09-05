@@ -2,10 +2,18 @@ import time
 import random
 
 
+class RateLimitError(Exception):
+    """Levee quand l'API simulee renvoie une erreur 429 (rate limit)."""
+
+
+class ServerError(Exception):
+    """Levee quand l'API simulee renvoie une erreur 5xx."""
+
+
 def fetch_siren_data(siren):
     """
     Mock API SIRENE avec :
-    - pagination simulée
+    - pagination simulee
     - retry
     - erreurs 429 / 5xx
     """
@@ -20,12 +28,11 @@ def fetch_siren_data(siren):
         while retries < 3:
             try:
 
-                # simulation erreurs API
                 if random.random() < 0.15:
-                    raise Exception("429 rate limit")
+                    raise RateLimitError("429 rate limit")
 
                 if random.random() < 0.10:
-                    raise Exception("500 server error")
+                    raise ServerError("500 server error")
 
                 results.append({
                     "siren": siren,
@@ -36,7 +43,7 @@ def fetch_siren_data(siren):
 
                 break
 
-            except Exception as e:
+            except (RateLimitError, ServerError):
                 retries += 1
                 wait = (2 ** retries) + random.random()
                 time.sleep(wait)
